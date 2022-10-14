@@ -7,17 +7,32 @@
 
 import UIKit
 import CoreData
+import MediaPlayer
+import MusicKit
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
-
-
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+        
+        let navBar = UINavigationBar.appearance()
+        
+        let color = [NSAttributedString.Key.foregroundColor: UIColor.black, NSAttributedString.Key.backgroundColor: UIColor.white]
+        navBar.prefersLargeTitles = true
+        navBar.titleTextAttributes = color
+        navBar.largeTitleTextAttributes = color
+        navBar.backgroundColor = UIColor.white
+        
         return true
     }
 
+    func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+        
+        
+        
+        return true
+    }
+    
     // MARK: UISceneSession Lifecycle
 
     func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
