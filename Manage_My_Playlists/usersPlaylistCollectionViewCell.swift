@@ -15,7 +15,7 @@ class usersPlaylistCollectionViewCell: UICollectionViewCell {
         image.backgroundColor = UIColor.white
         image.clipsToBounds = true
         image.image = UIImage(named: "music cover")
-        image.layer.cornerRadius = 5
+        image.layer.cornerRadius = 7.5
         
         return image
     }()
@@ -29,11 +29,11 @@ class usersPlaylistCollectionViewCell: UICollectionViewCell {
         label.numberOfLines = 1
         label.text = "Fake"
         label.font = UIFont.systemFont(ofSize: 16.5, weight: .regular)
-        label.layer.shadowOffset = CGSize(width: 0, height: 0)
         label.clipsToBounds = false
-        label.layer.shadowOpacity = 0.15
-        label.layer.shadowRadius = 2.5
-        label.shadowColor = UIColor.black
+        label.layer.shadowColor = UIColor.black.withAlphaComponent(1.0).cgColor
+        label.layer.shadowOpacity = 1.0
+        label.layer.shadowRadius = 6
+        label.layer.shadowOffset = CGSize(width: 0, height: 0)
         
         return label
     }()
@@ -47,11 +47,11 @@ class usersPlaylistCollectionViewCell: UICollectionViewCell {
         label.numberOfLines = 1
         label.text = "The Tech Thieves"
         label.font = UIFont.systemFont(ofSize: 16.5, weight: .regular)
-        label.layer.shadowOffset = CGSize(width: 0, height: 0)
         label.clipsToBounds = false
-        label.layer.shadowOpacity = 0.15
-        label.layer.shadowRadius = 2.5
-        label.shadowColor = UIColor.black
+        label.layer.shadowColor = UIColor.black.withAlphaComponent(1.0).cgColor
+        label.layer.shadowOpacity = 0.65
+        label.layer.shadowRadius = 6
+        label.layer.shadowOffset = CGSize(width: 0, height: 0)
         
         return label
     }()
@@ -79,16 +79,18 @@ class usersPlaylistCollectionViewCell: UICollectionViewCell {
         imageViewMusic.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
         imageViewMusic.heightAnchor.constraint(equalToConstant: self.frame.width - 10).isActive = true
         
-        playlistNameLabel.topAnchor.constraint(equalTo: imageViewMusic.bottomAnchor, constant: 5).isActive = true
+        playlistNameLabel.topAnchor.constraint(equalTo: imageViewMusic.bottomAnchor, constant: 10).isActive = true
         playlistNameLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 5).isActive = true
         playlistNameLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -5).isActive = true
         playlistNameLabel.sizeToFit()
+        //playlistNameLabel.heightAnchor.constraint(equalToConstant: playlistNameLabel.frame.height + 2.5).isActive = true
         
         playlistsCuratorName.topAnchor.constraint(equalTo: playlistNameLabel.bottomAnchor, constant: 3.5).isActive = true
         playlistsCuratorName.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 5).isActive = true
         playlistsCuratorName.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -5).isActive = true
         playlistsCuratorName.sizeToFit()
-        
+        //playlistsCuratorName.heightAnchor.constraint(equalToConstant: playlistsCuratorName.frame.height + 2.5).isActive = true
+
     }
     
     required init?(coder: NSCoder) {

@@ -17,8 +17,9 @@ class MyLibrary: UIViewController {
         let view = UIActivityIndicatorView()
         view.hidesWhenStopped = true
         view.style = UIActivityIndicatorView.Style.large
-        view.backgroundColor = UIColor.lightGray.withAlphaComponent(0.35)
+        view.backgroundColor = .clear
         view.layer.cornerRadius = 5
+        view.color = .black
         
         return view
     }()
@@ -44,7 +45,7 @@ class MyLibrary: UIViewController {
         super.viewDidLoad()
 
         view.backgroundColor = UIColor.white
-        navigationItem.title = "Running Section"
+        navigationItem.title = "Playlists"
         navigationItem.largeTitleDisplayMode = .always
         navigationController?.navigationBar.prefersLargeTitles = true
         view.backgroundColor = UIColor.white
@@ -65,17 +66,17 @@ class MyLibrary: UIViewController {
     func setPlaylistsCollectionView() {
         
         let layout: UICollectionViewFlowLayout = UICollectionViewFlowLayout()
-        layout.scrollDirection = .horizontal
+        layout.scrollDirection = .vertical
         
         usersPlaylistCollectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: layout)
         usersPlaylistCollectionView.register(usersPlaylistCollectionViewCell.self, forCellWithReuseIdentifier: usersPlaylistCollectionViewCellID)
-        usersPlaylistCollectionView.showsVerticalScrollIndicator = false
-        usersPlaylistCollectionView.showsHorizontalScrollIndicator = true
+        usersPlaylistCollectionView.showsVerticalScrollIndicator = true
+        usersPlaylistCollectionView.showsHorizontalScrollIndicator = false
         usersPlaylistCollectionView.backgroundColor = UIColor.clear
         usersPlaylistCollectionView.indicatorStyle = .default
         usersPlaylistCollectionView.isPagingEnabled = false
-        usersPlaylistCollectionView.bounces = false
-        usersPlaylistCollectionView.contentInset.bottom = self.tabBarController?.tabBar.frame.height ?? 0
+        usersPlaylistCollectionView.bounces = true
+        //usersPlaylistCollectionView.contentInset.bottom = self.tabBarController?.tabBar.frame.height ?? 0
         usersPlaylistCollectionView.delegate = self
         usersPlaylistCollectionView.dataSource = self
         
@@ -117,7 +118,6 @@ extension MyLibrary: SKCloudServiceSetupViewControllerDelegate {
                     self.activityIndicator.stopAnimating()
                     self.numberOfPlaylists = playlists?.count ?? 0
                     
-                    //MARK: -Enabling music controls
                     self.setPlaylistsCollectionView()
                     self.usersPlaylistCollectionView.reloadData()
                     
@@ -159,13 +159,8 @@ extension MyLibrary: SKCloudServiceSetupViewControllerDelegate {
                 }
                 
                 DispatchQueue.main.async { [self] in
-                    //setCollectionView()
                     fetchedPlaylists.append(PlaylistWithMusicStructure(id: playlist.id, Playlist: playlist, Tracks: tracks))
                     self.usersPlaylistCollectionView.reloadData()
-//                    selectedPlaylistIndex.removeAll()
-//                    selectedPlaylistIndex.append(IndexPath(row: 0, section: 0))
-//                    selectedPlaylist.removeAll()
-//                    selectedPlaylist.append(fetchedPlaylists.reversed().first!)
                     
                 }
                 
@@ -210,6 +205,13 @@ extension MyLibrary: SKCloudServiceSetupViewControllerDelegate {
         
         if SKCloudServiceController.authorizationStatus() == .authorized {
 
+            self.view.addSubview(self.activityIndicator)
+            self.activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+            self.activityIndicator.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+            self.activityIndicator.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+            self.activityIndicator.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+            self.activityIndicator.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+            
             self.activityIndicator.startAnimating()
             
             serviceController.requestCapabilities { capabilities, error in
@@ -223,11 +225,6 @@ extension MyLibrary: SKCloudServiceSetupViewControllerDelegate {
                         // User can sign up to Apple Music
                         self.activityIndicator.stopAnimating()
                         self.showAppleMusicSignup()
-//                        self.backGroundButtonForMusicContainer.addTarget(self, action: #selector(self.showAppleMusicSignup), for: .touchUpInside)
-//                        self.activityIndicator.stopAnimating()
-//                        self.activityIndicator.removeFromSuperview()
-//                        self.backGroundButtonForMusicContainer.isUserInteractionEnabled = true
-//                        self.containerViewForCurrentPlayingMusicController.isUserInteractionEnabled = true
                     }
                 }
             }
@@ -305,21 +302,20 @@ extension MyLibrary: UICollectionViewDelegateFlowLayout, UICollectionViewDataSou
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         
-        return UIEdgeInsets(top: 0, left: 0, bottom: 0, right: 0)
+        return UIEdgeInsets(top: 15, left: 15, bottom: 0, right: 15)
     }
     
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
+        return 0
+    }
         
-        return 5
-    }
-    
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: usersPlaylistCollectionViewCellID, for: indexPath) as! usersPlaylistCollectionViewCell
         cell.playlistNameLabel.text = fetchedPlaylists.reversed()[indexPath.row].Playlist.name
         DispatchQueue.main.async { [self] in
             
-            URLSession.shared.dataTask(with: (fetchedPlaylists.reversed()[indexPath.row].Playlist.artwork?.url(width: 100, height: 100))!) { (data, response, error) in
+            URLSession.shared.dataTask(with: (fetchedPlaylists.reversed()[indexPath.row].Tracks.first?.artwork?.url(width: 500, height: 500))!) { (data, response, error) in
                 
                 //Download hit error returning out
                 if error != nil {
@@ -340,8 +336,8 @@ extension MyLibrary: UICollectionViewDelegateFlowLayout, UICollectionViewDataSou
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        
-        return CGSize(width: (self.view.frame.width / 2) - 30, height: (self.view.frame.width / 2) + 30)
+                
+        return CGSize(width: (self.view.frame.width / 2) - 20, height: (self.view.frame.width / 2) + 50)
         
     }
     

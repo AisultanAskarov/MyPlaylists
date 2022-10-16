@@ -22,22 +22,6 @@ class Media_Content_Manager {
                 
         if SKCloudServiceController.authorizationStatus() == .authorized {
             
-//            mediaServiceController.requestCapabilities { capabilities, error in
-//                DispatchQueue.global(qos: .background).async {
-//                    if capabilities.contains(.musicCatalogPlayback) {
-//                        // User has Apple Music account
-//                        print("fe")
-//
-//                    }
-//
-//                    else if capabilities.contains(.musicCatalogSubscriptionEligible) {
-//                        // User can sign up to Apple Music
-//
-//
-//                    }
-//                }
-//            }
-            
             onCompletion(.authorized)
             
         } else if SKCloudServiceController.authorizationStatus() == .denied {

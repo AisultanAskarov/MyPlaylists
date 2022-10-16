@@ -14,7 +14,8 @@ class AskForPermission: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        
+        self.isModalInPresentation = true
+        view.backgroundColor = UIColor.white
         
     }
     
