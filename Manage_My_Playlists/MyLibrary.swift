@@ -50,6 +50,15 @@ class MyLibrary: UIViewController {
         return view
     }()
     
+    let dimmingNavView: UIView = {
+       
+        let view = UIView()
+        view.backgroundColor = .black.withAlphaComponent(0.3)
+        view.clipsToBounds = true
+        
+        return view
+    }()
+    
     let containerForPopUpRequestView: UIView = {
        
         let view = UIView()
@@ -156,32 +165,43 @@ class MyLibrary: UIViewController {
         return button
     }()
     
-    public func showRequestElements(_ show: Bool) {
+    public func hideRequestElements(_ hide: Bool) {
         
-        self.dimmingBgView.isHidden = show ? true : false
-        self.containerForPopUpRequestView.isHidden = show ? true : false
-        self.popUpRequestView.isHidden = show ? true : false
-        self.closeRequestButton.isHidden = show ? true : false
-        self.requestImageView.isHidden = show ? true : false
-        self.requestTitleLabel.isHidden = show ? true : false
-        self.notNowButton.isHidden = show ? true : false
-        self.allowAccessButton.isHidden = show ? true : false
+        self.dimmingBgView.isHidden = hide
+        self.dimmingNavView.isHidden = hide
+        self.containerForPopUpRequestView.isHidden = hide
+        self.popUpRequestView.isHidden = hide
+        self.closeRequestButton.isHidden = hide
+        self.requestImageView.isHidden = hide
+        self.requestTitleLabel.isHidden = hide
+        self.notNowButton.isHidden = hide
+        self.allowAccessButton.isHidden = hide
         
     }
+    
+    let libraryElementsArray: [LibraryElementsStructure] = [LibraryElementsStructure(title: "Artists", icon: "music.mic"), LibraryElementsStructure(title: "Albums", icon: "square.stack"), LibraryElementsStructure(title: "Songs", icon: "music.note"), LibraryElementsStructure(title: "Genres", icon: "guitars"), LibraryElementsStructure(title: "Compilations", icon: "person.2.crop.square.stack"), LibraryElementsStructure(title: "Composers", icon: "music.quarternote.3"), LibraryElementsStructure(title: "Downloaded", icon: "arrow.down.circle")]
+    
+    let headerId = "playlistsHeader"
+    let libraryElementsCellId = "libraryElementsCellId"
     
     override func viewDidLoad() {
         super.viewDidLoad()
 
         view.backgroundColor = .white
         navigationItem.title = "Playlists"
-        navigationItem.largeTitleDisplayMode = .always
         navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.largeTitleDisplayMode = .automatic
         navigationController?.navigationBar.tintColor = .black
-        navigationController?.navigationBar.isHidden = false
-        navigationController?.navigationBar.backgroundColor = .clear
+        navigationController?.navigationBar.backgroundColor = .white
         
-        self.checkIfAppleMusicIsAvailable()
+        setPlaylistsCollectionView()
+        checkIfAppleMusicIsAvailable()
+
+    }
+    
+    func setUpRequestView() {
         
+        navigationController?.navigationBar.addSubview(dimmingNavView)
         view.addSubview(dimmingBgView)
         view.addSubview(containerForPopUpRequestView)
         containerForPopUpRequestView.addSubview(popUpRequestView)
@@ -190,13 +210,14 @@ class MyLibrary: UIViewController {
         popUpRequestView.addSubview(requestTitleLabel)
         popUpRequestView.addSubview(notNowButton)
         popUpRequestView.addSubview(allowAccessButton)
-        showRequestElements(false)
-        setUpConstraints()
         
-    }
-    
-    func setUpConstraints() {
+        dimmingNavView.translatesAutoresizingMaskIntoConstraints = false
         
+        dimmingNavView.topAnchor.constraint(equalTo: (navigationController?.navigationBar.topAnchor)!).isActive = true
+        dimmingNavView.bottomAnchor.constraint(equalTo: (navigationController?.navigationBar.bottomAnchor)!).isActive = true
+        dimmingNavView.leadingAnchor.constraint(equalTo: (navigationController?.navigationBar.leadingAnchor)!).isActive = true
+        dimmingNavView.trailingAnchor.constraint(equalTo: (navigationController?.navigationBar.trailingAnchor)!).isActive = true
+
         dimmingBgView.translatesAutoresizingMaskIntoConstraints = false
         
         dimmingBgView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
@@ -262,16 +283,18 @@ class MyLibrary: UIViewController {
         layout.scrollDirection = .vertical
         
         usersPlaylistCollectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: layout)
+        usersPlaylistCollectionView.register(libraryElementsCell.self, forCellWithReuseIdentifier: libraryElementsCellId)
         usersPlaylistCollectionView.register(usersPlaylistCollectionViewCell.self, forCellWithReuseIdentifier: usersPlaylistCollectionViewCellID)
+        usersPlaylistCollectionView.register(HeaderView.self, forSupplementaryViewOfKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: headerId)
         usersPlaylistCollectionView.showsVerticalScrollIndicator = true
         usersPlaylistCollectionView.showsHorizontalScrollIndicator = false
         usersPlaylistCollectionView.backgroundColor = UIColor.clear
         usersPlaylistCollectionView.indicatorStyle = .default
         usersPlaylistCollectionView.isPagingEnabled = false
         usersPlaylistCollectionView.bounces = true
-        //usersPlaylistCollectionView.contentInset.bottom = self.tabBarController?.tabBar.frame.height ?? 0
         usersPlaylistCollectionView.delegate = self
         usersPlaylistCollectionView.dataSource = self
+        usersPlaylistCollectionView.contentInset = UIEdgeInsets(top: 15, left: 0, bottom: 0, right: 0)
         
         view.addSubview(usersPlaylistCollectionView)
         
@@ -285,21 +308,21 @@ class MyLibrary: UIViewController {
 
     func showPopUpRequestView() {
         
-        showRequestElements(true)
-        navigationController?.navigationBar.isHidden = true
+        setUpRequestView()
+        hideRequestElements(false)
         
         containerForPopUpRequestView.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
-        //closeRequestButton.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
+        dimmingNavView.alpha = 0
         dimmingBgView.alpha = 0
         popUpRequestView.alpha = 0
         closeRequestButton.alpha = 0
         
         UIView.animate(withDuration: 0.2) { [self] in
+            dimmingNavView.alpha = 1
             dimmingBgView.alpha = 1
             popUpRequestView.alpha = 1
             closeRequestButton.alpha = 1
             containerForPopUpRequestView.transform = CGAffineTransform.identity
-            //closeRequestButton.transform = CGAffineTransform.identity
         }
                 
     }
@@ -337,7 +360,7 @@ class MyLibrary: UIViewController {
         UIView.animate(withDuration: 0.2, animations: { [self] in
             
             containerForPopUpRequestView.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
-            //closeRequestButton.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
+            dimmingNavView.alpha = 0
             popUpRequestView.alpha = 0
             dimmingBgView.alpha = 0
             closeRequestButton.alpha = 0
@@ -345,7 +368,9 @@ class MyLibrary: UIViewController {
         }) { (success: Bool) in
             
             self.navigationController?.navigationBar.isHidden = false
-            self.showRequestElements(false)
+            self.hideRequestElements(true)
+            self.dimmingBgView.removeFromSuperview()
+            self.containerForPopUpRequestView.removeFromSuperview()
             
         }
         
@@ -360,6 +385,8 @@ extension MyLibrary: SKCloudServiceSetupViewControllerDelegate {
     
     @available(iOS 15.0, *)
     func appleMusicFetchUsersPlaylists(storeFrontId: String) {
+        
+        fetchedPlaylists.removeAll()
         
         Task {
         
@@ -379,7 +406,6 @@ extension MyLibrary: SKCloudServiceSetupViewControllerDelegate {
                     self.activityIndicator.stopAnimating()
                     self.numberOfPlaylists = playlists?.count ?? 0
                     
-                    self.setPlaylistsCollectionView()
                     self.usersPlaylistCollectionView.reloadData()
                     
                 } catch { print("Error Occured When fetching users playlists") }
@@ -390,8 +416,6 @@ extension MyLibrary: SKCloudServiceSetupViewControllerDelegate {
     
     @available(iOS 15.0, *)
     func appleMusicFetchMusicFromPlaylist(playlistId: String, storeFrontId: String, playlist: Playlist, lastPlaylistsId: String, numberOfPlaylists: Int) {
-        
-        fetchedPlaylists.removeAll()
         
         Task {
         
@@ -492,19 +516,6 @@ extension MyLibrary: SKCloudServiceSetupViewControllerDelegate {
             
         } else if SKCloudServiceController.authorizationStatus() == .denied {
             
-//            let alertController = UIAlertController(title: "To Play Music, You Have To Allow 'RebFit' to Access Your Music Library.", message: "RebFit requires your music library to let you to listen to music while you do your cardio session.", preferredStyle: .alert)
-//
-//            let settingsAction = UIAlertAction(title: "OK", style: .default) { (_) -> Void in
-//                if let appSettings = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(appSettings) {
-//                    UIApplication.shared.open(appSettings)
-//                }
-//            }
-//
-//            let cancelAction = UIAlertAction(title: "Cancel", style: .destructive, handler: nil)
-//
-//            alertController.addAction(cancelAction)
-//            alertController.addAction(settingsAction)
-//            self.present(alertController, animated: true)
             self.showPopUpRequestView()
             
         } else if SKCloudServiceController.authorizationStatus() == .notDetermined {
@@ -515,7 +526,7 @@ extension MyLibrary: SKCloudServiceSetupViewControllerDelegate {
             
             self.showPopUpRequestView()
             
-        }
+        } else {}
         
     }
     
@@ -539,52 +550,113 @@ extension MyLibrary: SKCloudServiceSetupViewControllerDelegate {
 extension MyLibrary: UICollectionViewDelegateFlowLayout, UICollectionViewDataSource {
     
     func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 1
+        return 2
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return fetchedPlaylists.count
+        
+        var numberOfItems: Int? = nil
+        
+        if section == 0 {
+            numberOfItems = libraryElementsArray.count
+        } else if section == 1 {
+            numberOfItems = fetchedPlaylists.count
+        }
+        
+        return numberOfItems ?? fetchedPlaylists.count
     }
-    
+        
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
         
-        return UIEdgeInsets(top: 15, left: 15, bottom: 0, right: 15)
+        var insets: UIEdgeInsets? = nil
+        
+        if section == 0 {
+            insets = UIEdgeInsets(top: 0, left: 20, bottom: 0, right: 0)
+        } else if section == 1 {
+            insets = UIEdgeInsets(top: 15, left: 15, bottom: 0, right: 15)
+        }
+        
+        return insets ?? UIEdgeInsets(top: 15, left: 15, bottom: 0, right: 15)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return 0
     }
         
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: usersPlaylistCollectionViewCellID, for: indexPath) as! usersPlaylistCollectionViewCell
-        cell.playlistNameLabel.text = fetchedPlaylists.reversed()[indexPath.row].Playlist.name
-        DispatchQueue.main.async { [self] in
-            
-            URLSession.shared.dataTask(with: (fetchedPlaylists.reversed()[indexPath.row].Tracks.first?.artwork?.url(width: 500, height: 500))!) { (data, response, error) in
-                
-                //Download hit error returning out
-                if error != nil {
-                    print(error!)
-                    return
-                }
-                
-                DispatchQueue.main.async {
-                    cell.imageViewMusic.image = UIImage(data: data!)
-                }
-                
-            }.resume()
-            
+        var headerSize: CGSize? = nil
+        
+        if section == 0 {
+            headerSize = CGSize(width: collectionView.bounds.width, height: 0)
+        } else if section == 1 {
+            headerSize = CGSize(width: collectionView.bounds.width, height: 60)
         }
         
-        return cell
+        return headerSize ?? CGSize(width: collectionView.bounds.width, height: 40)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        
+        let headerView = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionHeader, withReuseIdentifier: headerId, for: indexPath) as! HeaderView
+
+        if indexPath.section == 0 {
+            headerView.titleLabel.removeFromSuperview()
+        }
+        
+        return headerView
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
+        if indexPath.section == 0 {
+            
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: libraryElementsCellId, for: indexPath) as! libraryElementsCell
+            cell.elementsTitleLabel.text = libraryElementsArray[indexPath.row].title
+            cell.elementsIcon.image = UIImage(systemName: libraryElementsArray[indexPath.row].icon, withConfiguration: UIImage.SymbolConfiguration(pointSize: 24.0, weight: .medium))
+            
+            return cell
+            
+        } else if indexPath.section == 1 {
+            
+            let cell = collectionView.dequeueReusableCell(withReuseIdentifier: usersPlaylistCollectionViewCellID, for: indexPath) as! usersPlaylistCollectionViewCell
+            cell.playlistNameLabel.text = fetchedPlaylists.reversed()[indexPath.row].Playlist.name
+            DispatchQueue.main.async { [self] in
+                
+                URLSession.shared.dataTask(with: (fetchedPlaylists.reversed()[indexPath.row].Tracks.first?.artwork?.url(width: 500, height: 500))!) { (data, response, error) in
+                    
+                    //Download hit error returning out
+                    if error != nil {
+                        print(error!)
+                        return
+                    }
+                    
+                    DispatchQueue.main.async {
+                        cell.imageViewMusic.image = UIImage(data: data!)
+                    }
+                    
+                }.resume()
+                
+            }
+            
+            return cell
+        }
+        
+        return UICollectionViewCell()
         
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
                 
-        return CGSize(width: (self.view.frame.width / 2) - 20, height: (self.view.frame.width / 2) + 50)
+        var cellSize: CGSize? = nil
         
+        if indexPath.section == 0 {
+            cellSize = CGSize(width: (self.view.frame.width - 20), height: 45)
+        } else if indexPath.section == 1 {
+            cellSize = CGSize(width: (self.view.frame.width / 2) - 20, height: (self.view.frame.width / 2) + 50)
+        }
+        
+        return cellSize ?? CGSize(width: (self.view.frame.width / 2) - 20, height: (self.view.frame.width / 2) + 50)
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
@@ -595,9 +667,18 @@ extension MyLibrary: UICollectionViewDelegateFlowLayout, UICollectionViewDataSou
             
             
             
+        } else if let _ = collectionView.cellForItem(at: indexPath) as? libraryElementsCell {
+            
         }
         
     }
+    
+}
+
+struct LibraryElementsStructure {
+    
+    var title: String
+    var icon: String
     
 }
 

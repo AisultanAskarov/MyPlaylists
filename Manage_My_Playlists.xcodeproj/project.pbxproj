@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		222870202905C69000157DB8 /* libraryElementsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2228701F2905C69000157DB8 /* libraryElementsCell.swift */; };
+		222870222905D31900157DB8 /* HeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 222870212905D31900157DB8 /* HeaderView.swift */; };
 		2234AAA128F8A5B000FE7EB3 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2234AAA028F8A5B000FE7EB3 /* AppDelegate.swift */; };
 		2234AAA328F8A5B000FE7EB3 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2234AAA228F8A5B000FE7EB3 /* SceneDelegate.swift */; };
 		2234AAA528F8A5B000FE7EB3 /* MyLibrary.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2234AAA428F8A5B000FE7EB3 /* MyLibrary.swift */; };
@@ -41,6 +43,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		2228701F2905C69000157DB8 /* libraryElementsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = libraryElementsCell.swift; sourceTree = "<group>"; };
+		222870212905D31900157DB8 /* HeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HeaderView.swift; sourceTree = "<group>"; };
 		2234AA9D28F8A5B000FE7EB3 /* Manage_My_Playlists.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Manage_My_Playlists.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2234AAA028F8A5B000FE7EB3 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		2234AAA228F8A5B000FE7EB3 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -112,6 +116,8 @@
 				2234AAA028F8A5B000FE7EB3 /* AppDelegate.swift */,
 				2234AAA228F8A5B000FE7EB3 /* SceneDelegate.swift */,
 				2234AAA428F8A5B000FE7EB3 /* MyLibrary.swift */,
+				222870212905D31900157DB8 /* HeaderView.swift */,
+				2228701F2905C69000157DB8 /* libraryElementsCell.swift */,
 				2234AADB28F8C21600FE7EB3 /* usersPlaylistCollectionViewCell.swift */,
 				2234AAD928F8BAB200FE7EB3 /* AskForPermission.swift */,
 				2234AAD328F8A71500FE7EB3 /* Media Content Manager.swift */,
@@ -278,8 +284,10 @@
 				2234AAA528F8A5B000FE7EB3 /* MyLibrary.swift in Sources */,
 				2234AADC28F8C21600FE7EB3 /* usersPlaylistCollectionViewCell.swift in Sources */,
 				2234AAA128F8A5B000FE7EB3 /* AppDelegate.swift in Sources */,
+				222870222905D31900157DB8 /* HeaderView.swift in Sources */,
 				2234AAA328F8A5B000FE7EB3 /* SceneDelegate.swift in Sources */,
 				2234AADA28F8BAB200FE7EB3 /* AskForPermission.swift in Sources */,
+				222870202905C69000157DB8 /* libraryElementsCell.swift in Sources */,
 				2234AAD428F8A71500FE7EB3 /* Media Content Manager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
