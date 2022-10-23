@@ -17,41 +17,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         if let windowScene = scene as? UIWindowScene {
             let window = UIWindow(windowScene: windowScene)
             
-            mediaService.checkIfAppleMusicIsAvailable { result in
-                
-                if result == .authorized {
-                    
-                    let vc = MyLibrary()
-                    let navigationController = UINavigationController(rootViewController: vc)
-                    window.rootViewController = navigationController
-                    
-                } else if result == .denied {
-                    
-                    //Asking user for permission
-                    let vc = AskForPermission()
-                    let navigationController = UINavigationController(rootViewController: vc)
-                    window.rootViewController = navigationController
-                    
-                } else if result == .restricted {
-                    
-                    //Asking user for permission
-                    let vc = AskForPermission()
-                    let navigationController = UINavigationController(rootViewController: vc)
-                    window.rootViewController = navigationController
-                    
-                } else if result == .notDetermined {
-                    
-                    let vc = MyLibrary()
-                    let navigationController = UINavigationController(rootViewController: vc)
-                    window.rootViewController = navigationController
-                    
-                }
-                
-                window.backgroundColor = UIColor.white
-                self.window = window
-                window.makeKeyAndVisible()
-                
-            }
+            let vc = MyLibrary()
+            let navigationController = UINavigationController(rootViewController: vc)
+            window.rootViewController = navigationController
+            
+            window.backgroundColor = UIColor.white
+            self.window = window
+            window.makeKeyAndVisible()
             
             guard let _ = (scene as? UIWindowScene) else { return }
         }

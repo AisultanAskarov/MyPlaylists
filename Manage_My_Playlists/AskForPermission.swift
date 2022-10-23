@@ -18,7 +18,5 @@ class AskForPermission: UIViewController {
         view.backgroundColor = UIColor.white
         
     }
-    
-    
 
 }
