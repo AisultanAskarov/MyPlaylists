@@ -21,7 +21,6 @@
 		2234AAC728F8A5B100FE7EB3 /* Manage_My_PlaylistsUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2234AAC628F8A5B100FE7EB3 /* Manage_My_PlaylistsUITestsLaunchTests.swift */; };
 		2234AAD428F8A71500FE7EB3 /* Media Content Manager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2234AAD328F8A71500FE7EB3 /* Media Content Manager.swift */; };
 		2234AAD628F8AD2D00FE7EB3 /* MediaRequestResultReferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2234AAD528F8AD2D00FE7EB3 /* MediaRequestResultReferences.swift */; };
-		2234AADA28F8BAB200FE7EB3 /* AskForPermission.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2234AAD928F8BAB200FE7EB3 /* AskForPermission.swift */; };
 		2234AADC28F8C21600FE7EB3 /* usersPlaylistCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2234AADB28F8C21600FE7EB3 /* usersPlaylistCollectionViewCell.swift */; };
 /* End PBXBuildFile section */
 
@@ -61,7 +60,6 @@
 		2234AAC628F8A5B100FE7EB3 /* Manage_My_PlaylistsUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Manage_My_PlaylistsUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		2234AAD328F8A71500FE7EB3 /* Media Content Manager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Media Content Manager.swift"; sourceTree = "<group>"; };
 		2234AAD528F8AD2D00FE7EB3 /* MediaRequestResultReferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaRequestResultReferences.swift; sourceTree = "<group>"; };
-		2234AAD928F8BAB200FE7EB3 /* AskForPermission.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AskForPermission.swift; sourceTree = "<group>"; };
 		2234AADB28F8C21600FE7EB3 /* usersPlaylistCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = usersPlaylistCollectionViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -119,7 +117,6 @@
 				222870212905D31900157DB8 /* HeaderView.swift */,
 				2228701F2905C69000157DB8 /* libraryElementsCell.swift */,
 				2234AADB28F8C21600FE7EB3 /* usersPlaylistCollectionViewCell.swift */,
-				2234AAD928F8BAB200FE7EB3 /* AskForPermission.swift */,
 				2234AAD328F8A71500FE7EB3 /* Media Content Manager.swift */,
 				2234AAD528F8AD2D00FE7EB3 /* MediaRequestResultReferences.swift */,
 				2234AAA628F8A5B000FE7EB3 /* Main.storyboard */,
@@ -286,7 +283,6 @@
 				2234AAA128F8A5B000FE7EB3 /* AppDelegate.swift in Sources */,
 				222870222905D31900157DB8 /* HeaderView.swift in Sources */,
 				2234AAA328F8A5B000FE7EB3 /* SceneDelegate.swift in Sources */,
-				2234AADA28F8BAB200FE7EB3 /* AskForPermission.swift in Sources */,
 				222870202905C69000157DB8 /* libraryElementsCell.swift in Sources */,
 				2234AAD428F8A71500FE7EB3 /* Media Content Manager.swift in Sources */,
 			);

@@ -28,8 +28,8 @@ class MyLibrary: UIViewController {
     var storeFrontId: String? = ""
     
     var fetchedPlaylists: [PlaylistWithMusicStructure] = []
-    var selectedPlaylist: [PlaylistWithMusicStructure] = []
-    var selectedPlaylistIndex: [IndexPath] = []
+    //var selectedPlaylist: [PlaylistWithMusicStructure] = []
+    //var selectedPlaylistIndex: [IndexPath] = []
     
     var usersPlaylistCollectionView: UICollectionView!
     var usersPlaylistCollectionViewCellID = "PlaylistCell"
@@ -84,7 +84,7 @@ class MyLibrary: UIViewController {
         button.backgroundColor = .white
         button.setImage(UIImage(systemName: "xmark", withConfiguration: UIImage.SymbolConfiguration(pointSize: 15.0, weight: .semibold)), for: .normal)
         button.tintColor = .black
-        button.addTarget(self, action: #selector(closeRequest), for: .touchUpInside)
+        button.addTarget(self, action: #selector(closePopUpRequestView), for: .touchUpInside)
         button.clipsToBounds = false
         button.layer.shadowColor = UIColor.black.cgColor
         button.layer.shadowOpacity = 0.5 //Play with this setting to adjust intensity of the shadows (Changes the opacity of color)
@@ -99,8 +99,9 @@ class MyLibrary: UIViewController {
         let imageView = UIImageView()
         imageView.backgroundColor = .clear
         imageView.clipsToBounds = true
-        imageView.contentMode = .scaleAspectFill
-        //imageView.image = UIImage(named: <#T##String#>)
+        imageView.contentMode = .center
+        imageView.image = UIImage(systemName: "music.note", withConfiguration: UIImage.SymbolConfiguration(pointSize: 150, weight: .medium))
+        imageView.tintColor = .systemPink
         
         return imageView
     }()
@@ -159,7 +160,7 @@ class MyLibrary: UIViewController {
         button.setTitleColor(.darkGray, for: .normal)
         button.setTitleColor(.lightGray, for: .highlighted)
         button.titleLabel?.textAlignment = .center
-        button.addTarget(self, action: #selector(closeRequest), for: .touchUpInside) //Sends user to apps settings
+        button.addTarget(self, action: #selector(closePopUpRequestView), for: .touchUpInside) //Sends user to apps settings
         button.clipsToBounds = true
         
         return button
@@ -256,7 +257,7 @@ class MyLibrary: UIViewController {
         
         requestTitleLabel.translatesAutoresizingMaskIntoConstraints = false
         
-        requestTitleLabel.topAnchor.constraint(equalTo: requestImageView.bottomAnchor, constant: 15).isActive = true
+        requestTitleLabel.topAnchor.constraint(equalTo: requestImageView.bottomAnchor, constant: 20).isActive = true
         requestTitleLabel.leadingAnchor.constraint(equalTo: popUpRequestView.leadingAnchor, constant: 30).isActive = true
         requestTitleLabel.trailingAnchor.constraint(equalTo: popUpRequestView.trailingAnchor, constant: -30).isActive = true
         requestTitleLabel.sizeToFit()
@@ -326,6 +327,27 @@ class MyLibrary: UIViewController {
         }
                 
     }
+    
+    @objc func closePopUpRequestView() {
+        
+        UIView.animate(withDuration: 0.2, animations: { [self] in
+            
+            containerForPopUpRequestView.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
+            dimmingNavView.alpha = 0
+            popUpRequestView.alpha = 0
+            dimmingBgView.alpha = 0
+            closeRequestButton.alpha = 0
+
+        }) { (success: Bool) in
+            
+            self.navigationController?.navigationBar.isHidden = false
+            self.hideRequestElements(true)
+            self.dimmingBgView.removeFromSuperview()
+            self.containerForPopUpRequestView.removeFromSuperview()
+            
+        }
+        
+    }
         
     @objc func allowAccess() {
         
@@ -350,27 +372,6 @@ class MyLibrary: UIViewController {
             if let appSettings = URL(string: UIApplication.openSettingsURLString), UIApplication.shared.canOpenURL(appSettings) {
                 UIApplication.shared.open(appSettings)
             }
-            
-        }
-        
-    }
-    
-    @objc func closeRequest() {
-        
-        UIView.animate(withDuration: 0.2, animations: { [self] in
-            
-            containerForPopUpRequestView.transform = CGAffineTransform(scaleX: 0.9, y: 0.9)
-            dimmingNavView.alpha = 0
-            popUpRequestView.alpha = 0
-            dimmingBgView.alpha = 0
-            closeRequestButton.alpha = 0
-
-        }) { (success: Bool) in
-            
-            self.navigationController?.navigationBar.isHidden = false
-            self.hideRequestElements(true)
-            self.dimmingBgView.removeFromSuperview()
-            self.containerForPopUpRequestView.removeFromSuperview()
             
         }
         
@@ -423,7 +424,6 @@ extension MyLibrary: SKCloudServiceSetupViewControllerDelegate {
             playlistTracksRequestURLComponents.scheme = "https"
             playlistTracksRequestURLComponents.host = "api.music.apple.com"
             playlistTracksRequestURLComponents.path = "/v1/me/library/playlists/\(playlistId)/tracks"
-            //https://api.music.apple.com/v1/catalog/{STOREFRONT}/playlists/{PLAYLIST ID}?include=tracks,albums
             playlistTracksRequestURLComponents.queryItems = [URLQueryItem(name: "include", value: "catalog")]
 
             do {
@@ -543,7 +543,7 @@ extension MyLibrary: SKCloudServiceSetupViewControllerDelegate {
                 }
             }
 
-        }
+    }
     
 }
 
