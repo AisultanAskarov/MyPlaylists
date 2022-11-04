@@ -5,5 +5,6 @@ Hi guys! It's a repository for the Apple Music App's clone with a functional Pla
 Feel free to use it in your apps
 
 You will find all the code for playlists and music retrieving, and also a custom popUpAlert implementation.
-![IMG_8173](https://user-images.githubusercontent.com/36818367/198381844-8f8320fb-9df3-45ac-b428-7d1123793867.PNG)
-![IMG_8174](https://user-images.githubusercontent.com/36818367/198381867-dde547a3-136c-4a0b-8b77-8d962cb04f52.PNG)
+
+![ezgif com-gif-maker-2](https://user-images.githubusercontent.com/36818367/200081991-346b10da-b8c3-45cc-82e6-ab4e1100c99a.png)
+![ezgif com-gif-maker-3](https://user-images.githubusercontent.com/36818367/200081999-89a3ca1c-94a0-4052-8bf4-97a4cf8fda1e.png)
