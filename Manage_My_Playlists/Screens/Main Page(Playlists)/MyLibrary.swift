@@ -24,23 +24,6 @@ class MyLibrary: UIViewController {
         return view
     }()
     
-    let serviceController = SKCloudServiceController()
-    var storeFrontId: String? = ""
-    
-    var fetchedPlaylists: [PlaylistWithMusicStructure] = []
-    //var selectedPlaylist: [PlaylistWithMusicStructure] = []
-    //var selectedPlaylistIndex: [IndexPath] = []
-    
-    var usersPlaylistCollectionView: UICollectionView!
-    var usersPlaylistCollectionViewCellID = "PlaylistCell"
-    
-    var playlistsAreFetched: Bool = false
-    var numberOfPlaylists: Int = 0 {
-        didSet {
-            playlistsAreFetched = true
-        }
-    }
-    
     let dimmingBgView: UIView = {
        
         let view = UIView()
@@ -185,9 +168,23 @@ class MyLibrary: UIViewController {
     let headerId = "playlistsHeader"
     let libraryElementsCellId = "libraryElementsCellId"
     
+    var usersPlaylistCollectionView: UICollectionView!
+    var usersPlaylistCollectionViewCellID = "PlaylistCell"
+    
+    var playlistsAreFetched: Bool = false
+    var numberOfPlaylists: Int = 0 {
+        didSet {
+            if numberOfPlaylists > 0 {
+                playlistsAreFetched = true
+            }
+        }
+    }
+    
+    private var viewModel = MediaContentManager.shared
+    
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         view.backgroundColor = .white
         navigationItem.title = "Playlists"
         navigationController?.navigationBar.prefersLargeTitles = true
@@ -196,8 +193,38 @@ class MyLibrary: UIViewController {
         navigationController?.navigationBar.backgroundColor = .white
         
         setPlaylistsCollectionView()
-        checkIfAppleMusicIsAvailable()
-
+        
+        self.activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+        self.activityIndicator.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        self.activityIndicator.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        self.activityIndicator.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+        self.activityIndicator.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+        
+        self.activityIndicator.startAnimating()
+        
+        viewModel.getPlaylists { [self] result, playlists in
+            
+            self.activityIndicator.stopAnimating()
+            
+            switch result {
+                
+            case .SUCCESS:
+                usersPlaylistCollectionView.reloadData()
+            case .FAILED:
+                //Show Try again Popup
+                print("failed")
+            case .USERHASNOSUBSCRIPTION:
+                showAppleMusicSignup()
+            case .denied:
+                showPopUpRequestView()
+            case .restricted:
+                showPopUpRequestView()
+            case .notDetermined:
+                showPopUpRequestView()
+            }
+            
+        }
+        
     }
     
     func setUpRequestView() {
@@ -355,7 +382,7 @@ class MyLibrary: UIViewController {
 
             SKCloudServiceController.requestAuthorization { _ in
 
-                self.checkIfAppleMusicIsAvailable()
+//                self.checkIfAppleMusicIsAvailable()
 
             }
 
@@ -384,151 +411,50 @@ class MyLibrary: UIViewController {
 
 extension MyLibrary: SKCloudServiceSetupViewControllerDelegate {
     
-    @available(iOS 15.0, *)
-    func appleMusicFetchUsersPlaylists(storeFrontId: String) {
-        
-        fetchedPlaylists.removeAll()
-        
-        Task {
-        
-            if let url = URL(string: "https://api.music.apple.com/v1/me/library/playlists?") {
-                        
-                do {
-                    let dataRequest = MusicDataRequest(urlRequest: URLRequest(url: url))
-                    let playlistsResponse = try await dataRequest.response()
-                    
-                    let decoder = JSONDecoder()
-                    
-                    let playlists = try? decoder.decode(MusicItemCollection<Playlist>.self, from: playlistsResponse.data)
-                    
-                    for playlist in playlists! {
-                        appleMusicFetchMusicFromPlaylist(playlistId: playlist.id.rawValue, storeFrontId: storeFrontId, playlist: playlist, lastPlaylistsId: (playlists?.last!.id)!.rawValue, numberOfPlaylists: playlists!.count)
-                    }
-                    self.activityIndicator.stopAnimating()
-                    self.numberOfPlaylists = playlists?.count ?? 0
-                    
-                    self.usersPlaylistCollectionView.reloadData()
-                    
-                } catch { print("Error Occured When fetching users playlists") }
-        
-            }
-        }
-    }
-    
-    @available(iOS 15.0, *)
-    func appleMusicFetchMusicFromPlaylist(playlistId: String, storeFrontId: String, playlist: Playlist, lastPlaylistsId: String, numberOfPlaylists: Int) {
-        
-        Task {
-        
-            var playlistTracksRequestURLComponents = URLComponents()
-            playlistTracksRequestURLComponents.scheme = "https"
-            playlistTracksRequestURLComponents.host = "api.music.apple.com"
-            playlistTracksRequestURLComponents.path = "/v1/me/library/playlists/\(playlistId)/tracks"
-            playlistTracksRequestURLComponents.queryItems = [URLQueryItem(name: "include", value: "catalog")]
-
-            do {
-            
-                let playlistTracksRequestURL = playlistTracksRequestURLComponents.url!
-                let playlistTracksRequest = MusicDataRequest(urlRequest: URLRequest(url: playlistTracksRequestURL))
-                let playlistTracksResponse = try await playlistTracksRequest.response()
-
-                let decoder = JSONDecoder()
-                let playlistTracks = try decoder.decode(MusicItemCollection<Song>.self, from: playlistTracksResponse.data)
-                                
-                var tracks: [Song] = []
-                
-                for track in playlistTracks {
-                    
-                    tracks.append(track)
-                    
-                }
-                
-                DispatchQueue.main.async { [self] in
-                    fetchedPlaylists.append(PlaylistWithMusicStructure(id: playlist.id, Playlist: playlist, Tracks: tracks))
-                    self.usersPlaylistCollectionView.reloadData()
-                    
-                }
-                
-            } catch { print("Error Occured When fetching users playlists") }
-
-        }
-    }
-    
-    @available(iOS 15.0, *)
-    func appleMusicFetchStorefrontRegion() {
-        
-        serviceController.requestStorefrontIdentifier { storefrontId, error in
-          
-            DispatchQueue.global(qos: .background).async {
-                guard error == nil else {
-                    print("An error occured. Handle it here.")
-                    self.activityIndicator.stopAnimating()
-                    self.checkIfAppleMusicIsAvailable()
-                    return
-                }
-                
-                guard let storefrontId = storefrontId else {
-                    print("Handle the error - the callback didn't contain a storefront ID.")
-                    self.activityIndicator.stopAnimating()
-                    self.checkIfAppleMusicIsAvailable()
-                    return
-                }
-                
-                let trimmedId = storefrontId.prefix(5)
-                self.storeFrontId = String(trimmedId)
-                
-                self.appleMusicFetchUsersPlaylists(storeFrontId: String(trimmedId))
-                
-                print("Success! The Storefront ID fetched was: \(trimmedId)")
-            }
-        }
-        
-    }
-    
-    @available(iOS 15.0, *)
-    func checkIfAppleMusicIsAvailable() {
-        
-        if SKCloudServiceController.authorizationStatus() == .authorized {
-
-            self.view.addSubview(self.activityIndicator)
-            self.activityIndicator.translatesAutoresizingMaskIntoConstraints = false
-            self.activityIndicator.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-            self.activityIndicator.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-            self.activityIndicator.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-            self.activityIndicator.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-            
-            self.activityIndicator.startAnimating()
-            
-            serviceController.requestCapabilities { capabilities, error in
-                DispatchQueue.global(qos: .background).async {
-                    if capabilities.contains(.musicCatalogPlayback) {
-                        // User has Apple Music account
-                        print("fe")
-                        self.appleMusicFetchStorefrontRegion()
-                    }
-                    else if capabilities.contains(.musicCatalogSubscriptionEligible) {
-                        // User can sign up to Apple Music
-                        self.activityIndicator.stopAnimating()
-                        self.showAppleMusicSignup()
-                    }
-                }
-            }
-            
-        } else if SKCloudServiceController.authorizationStatus() == .denied {
-            
-            self.showPopUpRequestView()
-            
-        } else if SKCloudServiceController.authorizationStatus() == .notDetermined {
-
-            self.showPopUpRequestView()
-            
-        } else if SKCloudServiceController.authorizationStatus() == .restricted {
-            
-            self.showPopUpRequestView()
-            
-        } else {}
-        
-    }
+//    @available(iOS 15.0, *)
+//    func checkIfAppleMusicIsAvailable() {
+//
+//        if SKCloudServiceController.authorizationStatus() == .authorized {
+//
+//            self.view.addSubview(self.activityIndicator)
+//            self.activityIndicator.translatesAutoresizingMaskIntoConstraints = false
+//            self.activityIndicator.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+//            self.activityIndicator.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+//            self.activityIndicator.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
+//            self.activityIndicator.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
+//
+//            self.activityIndicator.startAnimating()
+//
+//            serviceController.requestCapabilities { capabilities, error in
+//                DispatchQueue.global(qos: .background).async {
+//                    if capabilities.contains(.musicCatalogPlayback) {
+//                        // User has Apple Music account
+//                        print("fe")
+//                        self.appleMusicFetchStorefrontRegion()
+//                    }
+//                    else if capabilities.contains(.musicCatalogSubscriptionEligible) {
+//                        // User can sign up to Apple Music
+//                        self.activityIndicator.stopAnimating()
+//                        self.showAppleMusicSignup()
+//                    }
+//                }
+//            }
+//
+//        } else if SKCloudServiceController.authorizationStatus() == .denied {
+//
+//            self.showPopUpRequestView()
+//
+//        } else if SKCloudServiceController.authorizationStatus() == .notDetermined {
+//
+//            self.showPopUpRequestView()
+//
+//        } else if SKCloudServiceController.authorizationStatus() == .restricted {
+//
+//            self.showPopUpRequestView()
+//
+//        } else {}
+//
+//    }
     
     @objc func showAppleMusicSignup() {
         
@@ -555,15 +481,16 @@ extension MyLibrary: UICollectionViewDelegateFlowLayout, UICollectionViewDataSou
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
-        var numberOfItems: Int? = nil
-        
-        if section == 0 {
-            numberOfItems = libraryElementsArray.count
-        } else if section == 1 {
-            numberOfItems = fetchedPlaylists.count
-        }
-        
-        return numberOfItems ?? fetchedPlaylists.count
+//        var numberOfItems: Int? = nil
+//
+//        if section == 0 {
+//            numberOfItems = libraryElementsArray.count
+//        } else if section == 1 {
+//            numberOfItems = fetchedPlaylists.count
+//        }
+//
+//        return numberOfItems ?? fetchedPlaylists.count
+        return 0
     }
         
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
@@ -624,17 +551,17 @@ extension MyLibrary: UICollectionViewDelegateFlowLayout, UICollectionViewDataSou
             DispatchQueue.main.async { [self] in
                 
                 URLSession.shared.dataTask(with: (fetchedPlaylists.reversed()[indexPath.row].Tracks.first?.artwork?.url(width: 500, height: 500))!) { (data, response, error) in
-                    
+
                     //Download hit error returning out
                     if error != nil {
                         print(error!)
                         return
                     }
-                    
+
                     DispatchQueue.main.async {
                         cell.imageViewMusic.image = UIImage(data: data!)
                     }
-                    
+
                 }.resume()
                 
             }
@@ -686,6 +613,6 @@ struct PlaylistWithMusicStructure: MusicItem {
     
     var id: MusicItemID
     var Playlist: Playlist
-    var Tracks: [Song]
+    var Tracks: MusicItemCollection<Song>?
     
 }

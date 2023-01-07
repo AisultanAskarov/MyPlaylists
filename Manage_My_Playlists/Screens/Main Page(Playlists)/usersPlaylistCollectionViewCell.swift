@@ -83,13 +83,11 @@ class usersPlaylistCollectionViewCell: UICollectionViewCell {
         playlistNameLabel.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 5).isActive = true
         playlistNameLabel.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -5).isActive = true
         playlistNameLabel.sizeToFit()
-        //playlistNameLabel.heightAnchor.constraint(equalToConstant: playlistNameLabel.frame.height + 2.5).isActive = true
         
         playlistsCuratorName.topAnchor.constraint(equalTo: playlistNameLabel.bottomAnchor, constant: 3.5).isActive = true
         playlistsCuratorName.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 5).isActive = true
         playlistsCuratorName.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -5).isActive = true
         playlistsCuratorName.sizeToFit()
-        //playlistsCuratorName.heightAnchor.constraint(equalToConstant: playlistsCuratorName.frame.height + 2.5).isActive = true
 
     }
     

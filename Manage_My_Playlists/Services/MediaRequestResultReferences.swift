@@ -15,3 +15,20 @@ enum MediaRequestResultReferences: String {
     case notDetermined
     
 }
+
+enum FetchResults {
+    
+    case SUCCESS
+    case FAILED
+    
+}
+
+enum GetPlaylistsResults {
+
+    case SUCCESS
+    case FAILED
+    case USERHASNOSUBSCRIPTION
+    case denied
+    case restricted
+    case notDetermined
+}
