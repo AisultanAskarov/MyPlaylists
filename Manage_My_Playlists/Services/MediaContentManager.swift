@@ -18,10 +18,11 @@ class MediaContentManager {
     private let appleMusicAPI = AppleMusicAPI.shared
     
     var storeFrontId: String = ""
+    var playlists = [PlaylistWithMusicStructure?]()
     
     private init() {}
     
-    func getPlaylists(onCompletion: @escaping (GetPlaylistsResults, [PlaylistWithMusicStructure]?) -> Void) {
+    func getPlaylists(onCompletion: @escaping (GetPlaylistsResults) -> Void) {
         
         appleMusicAPI.checkIfAppleMusicIsAvailable { [self] result in
             
@@ -40,39 +41,40 @@ class MediaContentManager {
                             
                             if result == .SUCCESS, storefrontId != nil {
                                 //Fetch Playlists
-                                appleMusicAPI.appleMusicFetchUsersPlaylists(storeFrontId: storefrontId!) { result, playlists in
+                                storeFrontId = storefrontId!
+                                appleMusicAPI.appleMusicFetchUsersPlaylists() { [self] result, playlistsIds in
                                     
-                                    if result == .SUCCESS, playlists != nil {
+                                    if result == .SUCCESS {
                                         
-                                        var playlistsArray: [PlaylistWithMusicStructure] = []
                                         
-                                        for playlist in playlists! {
-                                            playlistsArray.append(PlaylistWithMusicStructure(id: playlist.id, Playlist: playlist, Tracks: nil))
+                                        appleMusicAPI.appleMusicFetchPlaylistParameters(playlist_ids: playlistsIds!) { result, playlists in
+                                            
+                                            self.playlists.append(contentsOf: playlists ?? [PlaylistWithMusicStructure]())
+                                            onCompletion(.SUCCESS)
+                                            
                                         }
-                                        
-                                        onCompletion(.SUCCESS, playlistsArray)
-                                        
+                                                                                
                                     } else {
                                         //Something Went Wrong. Ask user to try again.
-                                        onCompletion(.FAILED, nil)
+                                        onCompletion(.FAILED)
                                     }
                                     
                                 }
                                 
                             } else {
                                 //ERROR. Tell user to try again
-                                onCompletion(.FAILED, nil)
+                                onCompletion(.FAILED)
                             }
                             
                         }
                         
                     case .FAILED:
                         //USER DOESNT HAVE AN ACTIVE APPLE MUSIC SUBSCRIPTION. SHOW APPLE MUSIC PAYWALL
-                        onCompletion(.USERHASNOSUBSCRIPTION, nil)
+                        onCompletion(.USERHASNOSUBSCRIPTION)
 
                     case .none:
                         //USER DOESNT HAVE AN ACTIVE APPLE MUSIC SUBSCRIPTION. SHOW APPLE MUSIC PAYWALL
-                        onCompletion(.USERHASNOSUBSCRIPTION, nil)
+                        onCompletion(.USERHASNOSUBSCRIPTION)
 
                     }
                     
@@ -80,19 +82,19 @@ class MediaContentManager {
                 
             case .restricted:
                 //RESTRICTED
-                onCompletion(.restricted, nil)
+                onCompletion(.restricted)
 
             case .denied:
                 //DENIED
-                onCompletion(.denied, nil)
+                onCompletion(.denied)
 
             case .notDetermined:
                 //NOTDETERMINED
-                onCompletion(.notDetermined, nil)
+                onCompletion(.notDetermined)
 
             case .none:
                 //Request Authorization as in NOTDETERMINED
-                onCompletion(.notDetermined, nil)
+                onCompletion(.notDetermined)
 
             }
             

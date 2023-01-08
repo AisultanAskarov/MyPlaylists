@@ -9,6 +9,7 @@ import UIKit
 import StoreKit
 import MediaPlayer
 import MusicKit
+import SwiftUI
 
 class MyLibrary: UIViewController {
 
@@ -190,9 +191,10 @@ class MyLibrary: UIViewController {
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .automatic
         navigationController?.navigationBar.tintColor = .black
-        navigationController?.navigationBar.backgroundColor = .white
-        
-        setPlaylistsCollectionView()
+        navigationController?.navigationBar.backgroundColor = .clear
+        navigationController?.navigationBar.isTranslucent = true
+
+        view.addSubview(activityIndicator)
         
         self.activityIndicator.translatesAutoresizingMaskIntoConstraints = false
         self.activityIndicator.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
@@ -202,14 +204,34 @@ class MyLibrary: UIViewController {
         
         self.activityIndicator.startAnimating()
         
-        viewModel.getPlaylists { [self] result, playlists in
-            
-            self.activityIndicator.stopAnimating()
+        getPlaylists()
+        
+    }
+    
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.navigationBar.isTranslucent = false
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        navigationController?.navigationBar.isTranslucent = true
+    }
+    
+    func getPlaylists() {
+        
+        viewModel.getPlaylists { [self] result  in
+            DispatchQueue.main.async { [self] in
+                setPlaylistsCollectionView()
+                activityIndicator.stopAnimating()
+            }
             
             switch result {
                 
             case .SUCCESS:
-                usersPlaylistCollectionView.reloadData()
+                DispatchQueue.main.async { [self] in
+                    usersPlaylistCollectionView.reloadData()
+                }
             case .FAILED:
                 //Show Try again Popup
                 print("failed")
@@ -224,7 +246,6 @@ class MyLibrary: UIViewController {
             }
             
         }
-        
     }
     
     func setUpRequestView() {
@@ -324,11 +345,11 @@ class MyLibrary: UIViewController {
         usersPlaylistCollectionView.dataSource = self
         usersPlaylistCollectionView.contentInset = UIEdgeInsets(top: 15, left: 0, bottom: 0, right: 0)
         
-        view.addSubview(usersPlaylistCollectionView)
+        view.insertSubview(usersPlaylistCollectionView, at: 0)
         
         usersPlaylistCollectionView.translatesAutoresizingMaskIntoConstraints = false
         usersPlaylistCollectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor).isActive = true
-        usersPlaylistCollectionView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor).isActive = true
+        usersPlaylistCollectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         usersPlaylistCollectionView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor).isActive = true
         usersPlaylistCollectionView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor).isActive = true
         
@@ -382,7 +403,7 @@ class MyLibrary: UIViewController {
 
             SKCloudServiceController.requestAuthorization { _ in
 
-//                self.checkIfAppleMusicIsAvailable()
+                self.getPlaylists()
 
             }
 
@@ -411,51 +432,6 @@ class MyLibrary: UIViewController {
 
 extension MyLibrary: SKCloudServiceSetupViewControllerDelegate {
     
-//    @available(iOS 15.0, *)
-//    func checkIfAppleMusicIsAvailable() {
-//
-//        if SKCloudServiceController.authorizationStatus() == .authorized {
-//
-//            self.view.addSubview(self.activityIndicator)
-//            self.activityIndicator.translatesAutoresizingMaskIntoConstraints = false
-//            self.activityIndicator.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
-//            self.activityIndicator.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
-//            self.activityIndicator.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
-//            self.activityIndicator.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
-//
-//            self.activityIndicator.startAnimating()
-//
-//            serviceController.requestCapabilities { capabilities, error in
-//                DispatchQueue.global(qos: .background).async {
-//                    if capabilities.contains(.musicCatalogPlayback) {
-//                        // User has Apple Music account
-//                        print("fe")
-//                        self.appleMusicFetchStorefrontRegion()
-//                    }
-//                    else if capabilities.contains(.musicCatalogSubscriptionEligible) {
-//                        // User can sign up to Apple Music
-//                        self.activityIndicator.stopAnimating()
-//                        self.showAppleMusicSignup()
-//                    }
-//                }
-//            }
-//
-//        } else if SKCloudServiceController.authorizationStatus() == .denied {
-//
-//            self.showPopUpRequestView()
-//
-//        } else if SKCloudServiceController.authorizationStatus() == .notDetermined {
-//
-//            self.showPopUpRequestView()
-//
-//        } else if SKCloudServiceController.authorizationStatus() == .restricted {
-//
-//            self.showPopUpRequestView()
-//
-//        } else {}
-//
-//    }
-    
     @objc func showAppleMusicSignup() {
         
             let vc = SKCloudServiceSetupViewController()
@@ -481,16 +457,15 @@ extension MyLibrary: UICollectionViewDelegateFlowLayout, UICollectionViewDataSou
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
-//        var numberOfItems: Int? = nil
-//
-//        if section == 0 {
-//            numberOfItems = libraryElementsArray.count
-//        } else if section == 1 {
-//            numberOfItems = fetchedPlaylists.count
-//        }
-//
-//        return numberOfItems ?? fetchedPlaylists.count
-        return 0
+        var numberOfItems: Int? = nil
+
+        if section == 0 {
+            numberOfItems = libraryElementsArray.count
+        } else if section == 1 {
+            numberOfItems = viewModel.playlists.count
+        }
+
+        return numberOfItems ?? 0
     }
         
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, insetForSectionAt section: Int) -> UIEdgeInsets {
@@ -547,22 +522,28 @@ extension MyLibrary: UICollectionViewDelegateFlowLayout, UICollectionViewDataSou
         } else if indexPath.section == 1 {
             
             let cell = collectionView.dequeueReusableCell(withReuseIdentifier: usersPlaylistCollectionViewCellID, for: indexPath) as! usersPlaylistCollectionViewCell
-            cell.playlistNameLabel.text = fetchedPlaylists.reversed()[indexPath.row].Playlist.name
+            cell.playlistNameLabel.text = viewModel.playlists[indexPath.row]?.Playlist?.name
             DispatchQueue.main.async { [self] in
                 
-                URLSession.shared.dataTask(with: (fetchedPlaylists.reversed()[indexPath.row].Tracks.first?.artwork?.url(width: 500, height: 500))!) { (data, response, error) in
-
-                    //Download hit error returning out
-                    if error != nil {
-                        print(error!)
-                        return
-                    }
-
-                    DispatchQueue.main.async {
-                        cell.imageViewMusic.image = UIImage(data: data!)
-                    }
-
-                }.resume()
+                if viewModel.playlists[indexPath.row]?.Playlist?.artwork != nil {
+                    
+                    URLSession.shared.dataTask(with: (viewModel.playlists[indexPath.row]?.Playlist?.artwork?.url(width: 500, height: 500))!) { (data, response, error) in
+                        
+                        //Download hit error returning out
+                        if error != nil {
+                            print(error!)
+                            return
+                        }
+                        
+                        DispatchQueue.main.async {
+                            cell.imageViewMusic.image = UIImage(data: data!)
+                        }
+                        
+                    }.resume()
+                    
+                } else {
+                    cell.imageViewMusic.image = UIImage(named: "playlist_artwork_placeholder")
+                }
                 
             }
             
@@ -592,7 +573,10 @@ extension MyLibrary: UICollectionViewDelegateFlowLayout, UICollectionViewDataSou
         
         if let _ = collectionView.cellForItem(at: indexPath) as? usersPlaylistCollectionViewCell {
             
+            //Moving To Playlist View
             
+            let host = UIHostingController(rootView: PlaylistView())
+            self.navigationController?.pushViewController(host, animated: true)
             
         } else if let _ = collectionView.cellForItem(at: indexPath) as? libraryElementsCell {
             
@@ -609,10 +593,9 @@ struct LibraryElementsStructure {
     
 }
 
-struct PlaylistWithMusicStructure: MusicItem {
-    
-    var id: MusicItemID
-    var Playlist: Playlist
+struct PlaylistWithMusicStructure {
+        
+    var Playlist: Playlist?
     var Tracks: MusicItemCollection<Song>?
     
 }

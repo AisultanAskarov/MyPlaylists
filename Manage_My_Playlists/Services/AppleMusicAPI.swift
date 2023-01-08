@@ -13,7 +13,8 @@ class AppleMusicAPI {
     
     static let shared = AppleMusicAPI()
     let mediaServiceController = SKCloudServiceController()
-    
+    var playlistsArray = [PlaylistWithMusicStructure]()
+
     private init() {}
     
     func appleMusicFetchStorefrontRegion(onCompletion: @escaping (FetchResults, String?) -> Void) {
@@ -47,36 +48,58 @@ class AppleMusicAPI {
         
     }
     
-    func appleMusicFetchUsersPlaylists(storeFrontId: String, onCompletion: @escaping (FetchResults, MusicItemCollection<Playlist>?) -> Void) {
-        
-        //fetchedPlaylists.removeAll()
-        
+    func appleMusicFetchUsersPlaylists(onCompletion: @escaping (FetchResults, MusicItemCollection<Playlist>?) -> Void) {
+                
         Task {
         
-            if let url = URL(string: "https://api.music.apple.com/v1/me/library/playlists?") {
+            let urlComponents = URLComponents(string: "https://api.music.apple.com/v1/me/library/playlists?")!
+            if let url = urlComponents.url {
                         
                 do {
+                    
                     let dataRequest = MusicDataRequest(urlRequest: URLRequest(url: url))
                     let playlistsResponse = try await dataRequest.response()
                     
                     let decoder = JSONDecoder()
                     
                     let playlists = try? decoder.decode(MusicItemCollection<Playlist>.self, from: playlistsResponse.data)
-                    
                     onCompletion(.SUCCESS, playlists)
-//                    for playlist in playlists! {
-//                        appleMusicFetchMusicFromPlaylist(playlistId: playlist.id.rawValue, storeFrontId: storeFrontId, playlist: playlist, lastPlaylistsId: (playlists?.last!.id)!.rawValue, numberOfPlaylists: playlists!.count)
-//                    }
-                    //self.activityIndicator.stopAnimating()
-                    //self.numberOfPlaylists = playlists?.count ?? 0
-                    
-                    //self.usersPlaylistCollectionView.reloadData()
                     
                 } catch {
                     print("Error Occured When fetching users playlists")
                     onCompletion(.FAILED, nil)
                 }
         
+            }
+        }
+    }
+    
+    func appleMusicFetchPlaylistParameters(playlist_ids: MusicItemCollection<Playlist>, onCompletion: @escaping (FetchResults, [PlaylistWithMusicStructure]?) -> Void) {
+        
+        playlistsArray.removeAll()
+        
+        let decoder = JSONDecoder()
+        
+        for playlist_id in playlist_ids {
+            Task {
+                let urlComponents = URLComponents(string: "https://api.music.apple.com/v1/me/library/playlists/\(playlist_id.id)")!
+                if let url = urlComponents.url {
+                    do {
+                        let dataRequest = MusicDataRequest(urlRequest: URLRequest(url: url))
+                        let playlistsResponse = try await dataRequest.response()
+                                                
+                        let playlist = try? decoder.decode(MusicItemCollection<Playlist>.self, from: playlistsResponse.data)
+                        playlistsArray.append(PlaylistWithMusicStructure(Playlist: playlist?.first, Tracks: nil))
+                        
+                        if playlistsArray.count > 0 {
+                            onCompletion(.SUCCESS, playlistsArray)
+                        }
+                        
+                    } catch {
+                        print("Error Occured When fetching users playlists params")
+                        onCompletion(.FAILED, nil)
+                    }
+                }
             }
         }
     }
@@ -99,19 +122,8 @@ class AppleMusicAPI {
 
                 let decoder = JSONDecoder()
                 let playlistTracks = try decoder.decode(MusicItemCollection<Song>.self, from: playlistTracksResponse.data)
-                                
-//                var tracks: [Song] = []
-//
-//                for track in playlistTracks {
-//
-//                    tracks.append(track)
-//
-//                }
-                
                 
                 DispatchQueue.main.async {
-//                    //fetchedPlaylists.append(PlaylistWithMusicStructure(id: playlist.id, Playlist: playlist, Tracks: tracks))
-//                    //self.usersPlaylistCollectionView.reloadData()
                     onCompletion(.SUCCESS, playlistTracks)
                 }
                 

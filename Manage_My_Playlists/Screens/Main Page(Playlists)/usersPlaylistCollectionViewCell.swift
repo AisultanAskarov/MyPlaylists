@@ -16,6 +16,7 @@ class usersPlaylistCollectionViewCell: UICollectionViewCell {
         image.clipsToBounds = true
         image.image = UIImage(named: "music cover")
         image.layer.cornerRadius = 7.5
+        image.contentMode = .scaleAspectFill
         
         return image
     }()
@@ -31,8 +32,8 @@ class usersPlaylistCollectionViewCell: UICollectionViewCell {
         label.font = UIFont.systemFont(ofSize: 16.5, weight: .regular)
         label.clipsToBounds = false
         label.layer.shadowColor = UIColor.black.withAlphaComponent(1.0).cgColor
-        label.layer.shadowOpacity = 1.0
-        label.layer.shadowRadius = 6
+        label.layer.shadowOpacity = 0.5
+        label.layer.shadowRadius = 5
         label.layer.shadowOffset = CGSize(width: 0, height: 0)
         
         return label
@@ -49,8 +50,8 @@ class usersPlaylistCollectionViewCell: UICollectionViewCell {
         label.font = UIFont.systemFont(ofSize: 16.5, weight: .regular)
         label.clipsToBounds = false
         label.layer.shadowColor = UIColor.black.withAlphaComponent(1.0).cgColor
-        label.layer.shadowOpacity = 0.65
-        label.layer.shadowRadius = 6
+        label.layer.shadowOpacity = 0.25
+        label.layer.shadowRadius = 5
         label.layer.shadowOffset = CGSize(width: 0, height: 0)
         
         return label
