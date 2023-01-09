@@ -89,9 +89,9 @@ class AppleMusicAPI {
                         let playlistsResponse = try await dataRequest.response()
                                                 
                         let playlist = try? decoder.decode(MusicItemCollection<Playlist>.self, from: playlistsResponse.data)
-                        playlistsArray.append(PlaylistWithMusicStructure(Playlist: playlist?.first, Tracks: nil))
+                        playlistsArray.append(PlaylistWithMusicStructure(Playlist: playlist?.first, Tracks: [Track?]()))
                         
-                        if playlistsArray.count > 0 {
+                        if playlistsArray.count == playlist_ids.count {
                             onCompletion(.SUCCESS, playlistsArray)
                         }
                         
@@ -104,7 +104,7 @@ class AppleMusicAPI {
         }
     }
     
-    func appleMusicFetchMusicFromPlaylist(playlistId: String, storeFrontId: String, playlist: Playlist, onCompletion: @escaping (FetchResults, MusicItemCollection<Song>?) -> Void) {
+    func appleMusicFetchMusicFromPlaylist(playlistId: String, onCompletion: @escaping (FetchResults, MusicItemCollection<Track>?) -> Void) {
         
         Task {
         
@@ -121,8 +121,7 @@ class AppleMusicAPI {
                 let playlistTracksResponse = try await playlistTracksRequest.response()
 
                 let decoder = JSONDecoder()
-                let playlistTracks = try decoder.decode(MusicItemCollection<Song>.self, from: playlistTracksResponse.data)
-                
+                let playlistTracks = try decoder.decode(MusicItemCollection<Track>.self, from: playlistTracksResponse.data)
                 DispatchQueue.main.async {
                     onCompletion(.SUCCESS, playlistTracks)
                 }

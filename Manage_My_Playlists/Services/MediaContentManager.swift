@@ -10,17 +10,29 @@ import UIKit
 import MediaPlayer
 import MusicKit
 import StoreKit
+import SwiftUI
 
-class MediaContentManager {
+class MediaContentManager: ObservableObject {
     
     static let shared = MediaContentManager()
-    //let mediaServiceController = SKCloudServiceController()
     private let appleMusicAPI = AppleMusicAPI.shared
     
     var storeFrontId: String = ""
     var playlists = [PlaylistWithMusicStructure?]()
     
+    @Published var currentPlaylistsId: String = ""
+    @Published var currentPlaylistsSongs = [Track]()
+    @Published var filteredSongs = [Track]()
+
     private init() {}
+    
+    //SEARCH BAR METHODS
+    
+    func search(with query: String = "") {
+        filteredSongs = query.isEmpty ? currentPlaylistsSongs : currentPlaylistsSongs.filter { $0.title.contains(query) }
+    }
+    
+    //GET PLAYLISTS API CALLS
     
     func getPlaylists(onCompletion: @escaping (GetPlaylistsResults) -> Void) {
         
@@ -102,12 +114,15 @@ class MediaContentManager {
         
     }
     
-    func getMusicForPlaylist(playlistId: String, storeFrontId: String, playlist: Playlist, onCompletion: @escaping (FetchResults, MusicItemCollection<Song>?) -> Void) {
+    func getMusicForPlaylist(onCompletion: @escaping (FetchResults, MusicItemCollection<Track>?) -> Void) {
         
-        appleMusicAPI.appleMusicFetchMusicFromPlaylist(playlistId: playlistId, storeFrontId: storeFrontId, playlist: playlist) { result, music in
+        appleMusicAPI.appleMusicFetchMusicFromPlaylist(playlistId: currentPlaylistsId) { [self] result, music in
             
             if result == .SUCCESS, music != nil {
                 
+                for track in music! {
+                    currentPlaylistsSongs.append(track)
+                }
                 onCompletion(.SUCCESS, music)
                 
             } else {

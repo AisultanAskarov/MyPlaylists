@@ -11,35 +11,100 @@ struct PlaylistView: View {
     
     //MARK: -PROPERTY
     
-    //arrow.down
-    //ellipsis
+    @StateObject var viewModel = MediaContentManager.shared
+    
+    @State var songsAreFetched: Bool = false
+    @State var showActivityIndicator: Bool = true
+    @State var isSearching: Bool = false
+    @State var query = ""
     
     var body: some View {
         
-        VStack {
-            Text("2")
-        }
+        ZStack {
+            
+            if viewModel.filteredSongs.isEmpty, isSearching == true {
+                EmptySearchList()
+            }
+            if showActivityIndicator == true {
+                ProgressView()
+                    .progressViewStyle(.circular)
+                    .foregroundColor(.black.opacity(0.15))
+                    .scaleEffect(1.75)
+                    .ignoresSafeArea(.all)
+                    .padding(0)
+            }
+            if songsAreFetched == true {
+                
+                VStack {
+                    
+                }//: VSTACK
+                
+            }
+        }//: ZSTACK
         .navigationTitle("")
+        .navigationBarTitleDisplayMode(.inline)
+        .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .automatic))
         .toolbar {
             HStack(alignment: .center, spacing: 7.5) {
                 Button {
                     print("")
                 } label: {
                     Circle()
-                        .fill(.gray.opacity(0.25))
-                        .frame(width: 27.5, height: 27.5)
+                        .fill(.gray.opacity(0.15))
+                        .frame(width: 30, height: 30)
                         .overlay {
                             Image(systemName: "arrow.down")
-                                .frame(maxWidth: 20, maxHeight: 20)
+                                .font(.system(size: 13.0, weight: .semibold))
+                                .foregroundColor(.pink)
+                                .padding()
+                        }
+                }
+                
+                Button {
+                    print("")
+                } label: {
+                    Circle()
+                        .fill(.gray.opacity(0.15))
+                        .frame(width: 30, height: 30)
+                        .overlay {
+                            Image(systemName: "ellipsis")
+                                .font(.system(size: 13.0, weight: .semibold))
                                 .foregroundColor(.pink)
                                 .padding()
                         }
                 }
 
             }
-        }
+        } //: TOOLBAR
+        .onSubmit(of: .search, {
+            viewModel.search()
+        })
+        .onChange(of: query, perform: { newValue in
+            viewModel.search()
+            if newValue == "" {
+                isSearching = false
+            } else {
+                isSearching = true
+            }
+        })//: ONCANGE
+        .onAppear {
+            viewModel.getMusicForPlaylist { result, _ in
+                print(result)
+                if result == .SUCCESS {
+                    songsAreFetched = true
+                    showActivityIndicator = false
+                    viewModel.search()
+                } else {
+                    songsAreFetched = false
+                    showActivityIndicator = false
+                }
+            }
+        }//: ONAPPEAR
+        .overlay {
+            
+        }//:OVERLAY
+        
     }
-    
 }
 
 struct PlaylistView_Previews: PreviewProvider {

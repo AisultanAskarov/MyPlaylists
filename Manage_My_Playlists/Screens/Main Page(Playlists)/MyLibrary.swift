@@ -596,6 +596,6 @@ struct LibraryElementsStructure {
 struct PlaylistWithMusicStructure {
         
     var Playlist: Playlist?
-    var Tracks: MusicItemCollection<Song>?
+    var Tracks: [Track?]
     
 }
