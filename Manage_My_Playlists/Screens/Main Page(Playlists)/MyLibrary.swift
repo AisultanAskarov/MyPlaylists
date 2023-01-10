@@ -573,8 +573,10 @@ extension MyLibrary: UICollectionViewDelegateFlowLayout, UICollectionViewDataSou
         
         if let _ = collectionView.cellForItem(at: indexPath) as? usersPlaylistCollectionViewCell {
             
-            //Moving To Playlist View
+            //Passing selected playlists id to viewModel to fetch Songs
+            viewModel.currentPlaylistsId = viewModel.playlists[indexPath.row]?.Playlist?.id.rawValue ?? ""
             
+            //Moving To Playlist View
             let host = UIHostingController(rootView: PlaylistView())
             self.navigationController?.pushViewController(host, animated: true)
             

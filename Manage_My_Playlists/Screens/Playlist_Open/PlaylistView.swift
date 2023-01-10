@@ -22,9 +22,15 @@ struct PlaylistView: View {
         
         ZStack {
             
-            if viewModel.filteredSongs.isEmpty, isSearching == true {
-                EmptySearchList()
+            if songsAreFetched == true {
+                
+                List(isSearching ? viewModel.currentPlaylistsSongs: viewModel.filteredSongs) { song in
+                    TrackCell(coverImageUrl: song.artwork?.url(width: 256, height: 256)?.absoluteString ?? "", numberInOrder: String(song.trackNumber ?? 0), title: song.title, artistName: song.artistName)
+                }
+                .listStyle(.plain)
+                
             }
+            
             if showActivityIndicator == true {
                 ProgressView()
                     .progressViewStyle(.circular)
@@ -33,13 +39,11 @@ struct PlaylistView: View {
                     .ignoresSafeArea(.all)
                     .padding(0)
             }
-            if songsAreFetched == true {
-                
-                VStack {
-                    
-                }//: VSTACK
-                
+            
+            if viewModel.filteredSongs.isEmpty, isSearching == true {
+                EmptySearchList()
             }
+            
         }//: ZSTACK
         .navigationTitle("")
         .navigationBarTitleDisplayMode(.inline)
@@ -88,12 +92,13 @@ struct PlaylistView: View {
             }
         })//: ONCANGE
         .onAppear {
-            viewModel.getMusicForPlaylist { result, _ in
+            viewModel.getMusicForPlaylist { result in
                 print(result)
                 if result == .SUCCESS {
                     songsAreFetched = true
                     showActivityIndicator = false
                     viewModel.search()
+                    print(viewModel.currentPlaylistsSongs)
                 } else {
                     songsAreFetched = false
                     showActivityIndicator = false

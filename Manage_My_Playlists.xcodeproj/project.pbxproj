@@ -25,6 +25,9 @@
 		227A18AF296B3FEF003E5B89 /* PlaylistView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 227A18AE296B3FEF003E5B89 /* PlaylistView.swift */; };
 		227A18B2296B5583003E5B89 /* NavController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 227A18B1296B5583003E5B89 /* NavController.swift */; };
 		227A18B4296B5E6E003E5B89 /* ImageModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 227A18B3296B5E6E003E5B89 /* ImageModifiers.swift */; };
+		2295898B296DABC70092C357 /* TrackCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2295898A296DABC70092C357 /* TrackCell.swift */; };
+		2295898E296DB2300092C357 /* ImageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2295898D296DB2300092C357 /* ImageView.swift */; };
+		22958990296DB3520092C357 /* ImageLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2295898F296DB3520092C357 /* ImageLoader.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -67,6 +70,9 @@
 		227A18AE296B3FEF003E5B89 /* PlaylistView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistView.swift; sourceTree = "<group>"; };
 		227A18B1296B5583003E5B89 /* NavController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavController.swift; sourceTree = "<group>"; };
 		227A18B3296B5E6E003E5B89 /* ImageModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageModifiers.swift; sourceTree = "<group>"; };
+		2295898A296DABC70092C357 /* TrackCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackCell.swift; sourceTree = "<group>"; };
+		2295898D296DB2300092C357 /* ImageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageView.swift; sourceTree = "<group>"; };
+		2295898F296DB3520092C357 /* ImageLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageLoader.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +105,7 @@
 			children = (
 				227A18AE296B3FEF003E5B89 /* PlaylistView.swift */,
 				22348369296CA4C90093DF00 /* EmptySearchList.swift */,
+				2295898A296DABC70092C357 /* TrackCell.swift */,
 			);
 			path = Playlist_Open;
 			sourceTree = "<group>";
@@ -130,6 +137,8 @@
 				2237852D29689A360082FAB4 /* Screens */,
 				2237852C29689A0D0082FAB4 /* Services */,
 				227A18B0296B5571003E5B89 /* Extensions */,
+				2295898C296DB20F0092C357 /* Utils */,
+				22958991296DB3670092C357 /* Views */,
 				227A18AC296B24E8003E5B89 /* Main.storyboard */,
 				2234AAAC28F8A5B100FE7EB3 /* Assets.xcassets */,
 				2234AAAE28F8A5B100FE7EB3 /* LaunchScreen.storyboard */,
@@ -184,6 +193,22 @@
 				227A18B3296B5E6E003E5B89 /* ImageModifiers.swift */,
 			);
 			path = Extensions;
+			sourceTree = "<group>";
+		};
+		2295898C296DB20F0092C357 /* Utils */ = {
+			isa = PBXGroup;
+			children = (
+				2295898F296DB3520092C357 /* ImageLoader.swift */,
+			);
+			path = Utils;
+			sourceTree = "<group>";
+		};
+		22958991296DB3670092C357 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				2295898D296DB2300092C357 /* ImageView.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -322,10 +347,13 @@
 				2234AAA528F8A5B000FE7EB3 /* MyLibrary.swift in Sources */,
 				2234AADC28F8C21600FE7EB3 /* usersPlaylistCollectionViewCell.swift in Sources */,
 				2234AAA128F8A5B000FE7EB3 /* AppDelegate.swift in Sources */,
+				2295898B296DABC70092C357 /* TrackCell.swift in Sources */,
 				227A18AF296B3FEF003E5B89 /* PlaylistView.swift in Sources */,
 				2237852B296899400082FAB4 /* AppleMusicAPI.swift in Sources */,
+				2295898E296DB2300092C357 /* ImageView.swift in Sources */,
 				2234836A296CA4C90093DF00 /* EmptySearchList.swift in Sources */,
 				222870222905D31900157DB8 /* HeaderView.swift in Sources */,
+				22958990296DB3520092C357 /* ImageLoader.swift in Sources */,
 				227A18B4296B5E6E003E5B89 /* ImageModifiers.swift in Sources */,
 				2234AAA328F8A5B000FE7EB3 /* SceneDelegate.swift in Sources */,
 				222870202905C69000157DB8 /* libraryElementsCell.swift in Sources */,

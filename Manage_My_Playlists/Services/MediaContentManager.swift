@@ -114,7 +114,7 @@ class MediaContentManager: ObservableObject {
         
     }
     
-    func getMusicForPlaylist(onCompletion: @escaping (FetchResults, MusicItemCollection<Track>?) -> Void) {
+    func getMusicForPlaylist(onCompletion: @escaping (FetchResults) -> Void) {
         
         appleMusicAPI.appleMusicFetchMusicFromPlaylist(playlistId: currentPlaylistsId) { [self] result, music in
             
@@ -123,11 +123,11 @@ class MediaContentManager: ObservableObject {
                 for track in music! {
                     currentPlaylistsSongs.append(track)
                 }
-                onCompletion(.SUCCESS, music)
+                onCompletion(.SUCCESS)
                 
             } else {
                 //Couldnt get music. Ask user to try again
-                onCompletion(.FAILED, nil)
+                onCompletion(.FAILED)
             }
             
         }
