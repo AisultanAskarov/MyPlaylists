@@ -16,45 +16,49 @@ struct TrackCell: View {
     
     var body: some View {
         
-        HStack(alignment: .center) {
-            
-            ImageView(url: coverImageUrl, placeholder: "playlist_artwork_placeholder")
-            
-            Text(numberInOrder)
-                .font(.system(size: 20.0, weight: .bold, design: .default))
-                .lineLimit(1)
-                .foregroundColor(.black)
-                .multilineTextAlignment(.center)
-                .padding(5.5)
-
-            VStack(alignment: .leading) {
-                Text(title)
-                    .font(.subheadline)
+        VStack {
+            HStack(alignment: .center) {
+                
+                ImageView(url: coverImageUrl, placeholder: "playlist_artwork_placeholder")
+                
+                Text(numberInOrder)
+                    .font(.system(size: 19.0, weight: .bold, design: .default))
                     .lineLimit(1)
                     .foregroundColor(.black)
-                    .multilineTextAlignment(.leading)
-                Text(artistName)
-                    .font(.footnote)
-                    .lineLimit(1)
-                    .foregroundColor(.secondary)
-                    .multilineTextAlignment(.leading)
-            }//:VSTACK
+                    .multilineTextAlignment(.center)
+                    .padding([.leading, .trailing], 4.5)
+                
+                VStack(alignment: .leading, spacing: 3.0) {
+                    Text(title)
+                        .font(.subheadline)
+                        .lineLimit(1)
+                        .foregroundColor(.black)
+                        .multilineTextAlignment(.leading)
+                    Text(artistName)
+                        .font(.footnote)
+                        .lineLimit(1)
+                        .foregroundColor(.secondary)
+                        .multilineTextAlignment(.leading)
+                }//:VSTACK
+                
+                Spacer()
+                
+                Button {
+                    //Some Action
+                    print("1")
+                } label: {
+                    Image(systemName: "ellipsis")
+                        .trackCellEllipseModifier()
+                }
+                .padding(.trailing, 10)
+                .frame(width: 20, height: 15, alignment: .center)
+                .buttonStyle(.borderless)
+                
+                
+            }//: HSTACK
             
-            Spacer()
-            
-            Button {
-                //Some Action
-                print("1")
-            } label: {
-                Image(systemName: "ellipsis")
-                    .trackCellEllipseModifier()
-            }
-            .padding(10)
-
-            
-        }//: HSTACK
-        //.padding()
-        
+            Divider()
+        }//: VSTACK
     }
     
 }

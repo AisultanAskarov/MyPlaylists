@@ -20,6 +20,11 @@ class MediaContentManager: ObservableObject {
     var storeFrontId: String = ""
     var playlists = [PlaylistWithMusicStructure?]()
     
+    @Published var currentPlaylistsArtwork: UIImage = UIImage(named: "playlist_artwork_placeholder")!
+    @Published var currentPlaylistsTitle: String = ""
+    @Published var currentPlaylistsSubTitle: String = ""
+    @Published var currentPlaylistsCaption: String = ""
+    @Published var currentPlaylistsDescription: String = ""
     @Published var currentPlaylistsId: String = ""
     @Published var currentPlaylistsSongs = [Track]()
     @Published var filteredSongs = [Track]()
@@ -28,7 +33,7 @@ class MediaContentManager: ObservableObject {
     
     //SEARCH BAR METHODS
     
-    func search(with query: String = "") {
+    func search(with query: String) {
         filteredSongs = query.isEmpty ? currentPlaylistsSongs : currentPlaylistsSongs.filter { $0.title.contains(query) }
     }
     
@@ -115,6 +120,8 @@ class MediaContentManager: ObservableObject {
     }
     
     func getMusicForPlaylist(onCompletion: @escaping (FetchResults) -> Void) {
+        
+        currentPlaylistsSongs.removeAll()
         
         appleMusicAPI.appleMusicFetchMusicFromPlaylist(playlistId: currentPlaylistsId) { [self] result, music in
             

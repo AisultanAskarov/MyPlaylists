@@ -571,10 +571,15 @@ extension MyLibrary: UICollectionViewDelegateFlowLayout, UICollectionViewDataSou
         
         //MARK: -ActionForCustomCells
         
-        if let _ = collectionView.cellForItem(at: indexPath) as? usersPlaylistCollectionViewCell {
+        if let cell = collectionView.cellForItem(at: indexPath) as? usersPlaylistCollectionViewCell {
             
             //Passing selected playlists id to viewModel to fetch Songs
             viewModel.currentPlaylistsId = viewModel.playlists[indexPath.row]?.Playlist?.id.rawValue ?? ""
+            viewModel.currentPlaylistsArtwork = cell.imageViewMusic.image ?? UIImage(named: "playlist_artwork_placeholder")!
+            viewModel.currentPlaylistsTitle = viewModel.playlists[indexPath.row]?.Playlist?.name ?? ""
+            viewModel.currentPlaylistsSubTitle = viewModel.playlists[indexPath.row]?.Playlist?.curatorName ?? ""
+            viewModel.currentPlaylistsCaption = viewModel.playlists[indexPath.row]?.Playlist?.featuredArtists?.title ?? viewModel.playlists[indexPath.row]?.Playlist?.kind.debugDescription ?? ""
+            viewModel.currentPlaylistsDescription = viewModel.playlists[indexPath.row]?.Playlist?.standardDescription ?? ""
             
             //Moving To Playlist View
             let host = UIHostingController(rootView: PlaylistView())
